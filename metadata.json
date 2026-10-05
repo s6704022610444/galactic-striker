@@ -1,0 +1,8 @@
+{
+  "name": "GALACTIC STRIKER",
+  "description": "เกมยานอวกาศ 2D สุดมันส์ สร้างด้วย HTML5 Canvas พร้อมระบบอัปเกรดอาวุธและบอสสุดท้าทาย",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
