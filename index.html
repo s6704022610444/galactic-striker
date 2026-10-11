@@ -683,11 +683,11 @@
             </div>
           </div>
           <div style="display: flex; gap: 5px; align-items: center;">
-            <button id="pause-btn" class="sound-btn" title="พักเกม (Pause: P หรือ ESC)">
+            <button id="pause-btn" class="sound-btn" tabindex="-1" title="พักเกม (Pause: P หรือ ESC)">
               <span id="pause-icon">⏸️</span>
               <span id="pause-text" style="font-size: 11px;">พัก</span>
             </button>
-            <button id="sound-toggle-btn" class="sound-btn" title="เปิด/ปิดเสียง">
+            <button id="sound-toggle-btn" class="sound-btn" tabindex="-1" title="เปิด/ปิดเสียง">
               <span id="sound-icon">🔊</span>
               <span id="sound-text" style="font-size: 11px;">เสียง</span>
             </button>
@@ -727,7 +727,7 @@
             <span id="start-high-score" class="val" style="color: #facc15;">0</span>
           </div>
         </div>
-        <button id="start-btn" class="btn-primary">เริ่มเกม (START)</button>
+        <button id="start-btn" class="btn-primary" tabindex="-1">เริ่มเกม (START)</button>
         <div class="controls-guide">
           <div><span class="key-tag">W A S D</span> หรือ <span class="key-tag">ลูกศร</span> &bull; <span class="key-tag">Spacebar</span> ยิงปืน &bull; <span class="key-tag">P</span> / <span class="key-tag">ESC</span> พักเกม</div>
           <div style="display:flex; justify-content:center; gap:8px; margin-top:3px;">
@@ -748,7 +748,7 @@
           <div style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">
             เกมหยุดชั่วคราว &bull; กดปุ่ม <span class="key-tag">ESC</span> หรือ <span class="key-tag">P</span> เพื่อเล่นต่อ
           </div>
-          <button id="resume-btn" class="btn-primary" style="min-width: 180px;">เล่นต่อ (RESUME)</button>
+          <button id="resume-btn" class="btn-primary" tabindex="-1" style="min-width: 180px;">เล่นต่อ (RESUME)</button>
         </div>
       </div>
       <div id="game-over-screen" class="screen-overlay hidden">
@@ -773,7 +773,7 @@
             <span id="enemies-killed" class="val" style="color: #4ade80;">0 ลำ</span>
           </div>
         </div>
-        <button id="restart-btn" class="btn-primary">เล่นใหม่ (RETRY)</button>
+        <button id="restart-btn" class="btn-primary" tabindex="-1">เล่นใหม่ (RETRY)</button>
       </div>
       <div class="mobile-controls">
         <div class="dpad-grid">
@@ -2733,6 +2733,9 @@
       window.addEventListener("resize", () => this.resizeCanvas());
       window.addEventListener("keydown", (e) => {
         this.sound.init();
+        if (e.code === "Space") {
+          e.preventDefault();
+        }
         if (e.code === "KeyP" || e.code === "Escape") {
           if (this.state === "playing") {
             e.preventDefault();
@@ -2749,13 +2752,20 @@
         }
       });
       window.addEventListener("keyup", (e) => {
+        if (e.code === "Space") {
+          e.preventDefault();
+        }
         this.keys[e.code] = false;
       });
-      document.getElementById("start-btn")?.addEventListener("click", () => {
+      document.getElementById("start-btn")?.addEventListener("click", (e) => {
+        if (e && e.currentTarget && typeof e.currentTarget.blur === "function") e.currentTarget.blur();
+        if (this.state === "playing") return;
         this.sound.init();
         this.startGame();
       });
-      document.getElementById("restart-btn")?.addEventListener("click", () => {
+      document.getElementById("restart-btn")?.addEventListener("click", (e) => {
+        if (e && e.currentTarget && typeof e.currentTarget.blur === "function") e.currentTarget.blur();
+        if (this.state === "playing") return;
         this.sound.init();
         this.startGame();
       });
@@ -2837,6 +2847,11 @@
       this.canvas.addEventListener("touchcancel", stopDrag);
     }
     startGame() {
+      if (this.state === "playing") return;
+      if (document.activeElement && typeof document.activeElement.blur === "function") {
+        document.activeElement.blur();
+      }
+      this.keys = {};
       this.score = 0;
       this.lives = 3;
       this.enemiesKilled = 0;
